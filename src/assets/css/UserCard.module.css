@@ -1,0 +1,168 @@
+.container_card{
+	width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+	justify-content: center;
+    margin: 0 auto;
+}
+
+.card{
+	width: 240px;
+	margin: 12px;
+	border-radius: 6px;
+	overflow: hidden;
+	background:#fff;
+	box-shadow: 0px 1px 10px rgba(0,0,0,0.2);
+    text-align: center;
+}
+.card, .list{
+	transition: all 200ms ease-in-out;
+}
+
+.disabled{
+	border: 5px solid rgba(255, 0, 0, 0.238);
+	box-shadow: 1px 1px 1px 1px   rgb(255, 0, 0);
+}
+
+.card:hover{
+	box-shadow: 5px 5px 20px rgba(0,0,0,0.4);
+	transform: translateY(-3%);
+}
+.card img{
+	margin-top: -8px;
+	width: 230px;
+	height: 230px;
+	object-fit: cover;
+	border-radius: 50%;
+	border: 1px solid rgba(35, 33, 33, 0.238);
+	box-shadow: 1px 1px 1px 1px   rgba(0, 0, 0, 0.208);
+	transform: translateY(12px);
+}
+.list{
+	width: 320px;
+	margin: 12px;
+	border-radius: 6px;
+	overflow: hidden;
+	background:rgb(255, 255, 255);
+	box-shadow: 0px 1px 10px rgba(0,0,0,0.2);
+    text-align: center;
+	display: flex;
+	flex-wrap: wrap;
+}
+.list img{
+	margin: 2px 3px;
+	width: 80px;
+	height: 80px;
+	object-fit: cover;
+	border-radius: 50%;
+	border: 1px solid rgba(35, 33, 33, 0.238);
+	box-shadow: 1px 1px 1px 1px   rgba(0, 0, 0, 0.208);
+	
+}
+.list_text {
+	text-align: left;
+	margin: 0px 5px;
+}
+
+
+.list_text h4{
+	margin: 2px 5px 0px 5px;
+}
+.list_text p{
+	font-size: small;
+	margin: 0px 5px;
+}
+.list_text p span{
+	font-size: small;
+}
+
+.card_text h4{
+	text-align: left;
+	margin: 0px 0px 0px 15px;
+}
+.card_text p{
+	text-align: left;
+	margin: 5px 0px 0px 15px;
+}
+
+.card .drop{
+	margin: 0px 0px -10px;
+}
+.list .drop{
+	width: 70%;
+	font-size: smaller;
+	margin: 0px 0px -12px;
+}
+.list .admin_area{
+
+}
+.link{
+    text-decoration: none;
+}
+
+.success, .error{
+	position: relative;
+}
+
+.success{
+	color:rgb(3, 204, 0);
+}
+.error{
+	color:rgb(172, 0, 0);
+}
+
+.admin{
+	color: blueviolet;
+	font-weight: bolder;
+}
+
+.user{
+	color: black;
+}
+
+.moderator{
+	color: aqua;
+	font-weight: bold;
+}
+
+.admin_area{
+	/* background-color: #db2100; */
+	width: 100%;
+	margin:0px;
+	display: flex;
+	justify-content: space-between;
+	padding: 0px 10%;
+
+}
+
+.admin_area input{
+	cursor: pointer;
+	background-color: #9632212d;
+	padding: 0px 10px;
+}
+
+
+.admin_area input:checked{
+	background-color: #FF416C;
+	box-shadow: 0 1px 2px rgba(0,0,0,0.25), 
+	0 10px 10px rgba(0,0,0,0.22);
+	border: 1px solid #db2100;
+}
+.admin_area input:focus{
+	box-shadow: 2px 2px 2px 2px   rgba(168, 0, 0, 0.208);
+	border: 1px solid #db2100;
+}
+
+
+
+@media (max-width: 800px){
+	.card{
+		width: 90%;
+		margin: 12px;
+	}
+
+	.card img{
+		width: 280px;
+		height: 280px;
+	}
+}

@@ -1,0 +1,46 @@
+.container_game{
+	justify-content: left;
+    width: 90%;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 30px ;
+}
+
+.frame{
+    width: 70%;
+	border-radius: 5px;
+	overflow: hidden;
+	box-shadow: 0px 1px 10px rgba(0,0,0,0.2);
+	transition: all 400ms ease-out;
+    text-align: left;
+    
+}
+
+.info{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    padding: 20px;
+    width: 30%;
+}
+.title{
+    font-weight: bolder;
+    margin: 0 auto;
+    color: rgb(0, 0, 0);
+}
+.info img{
+    margin: 0 auto;
+}
+@media (max-width: 1200px){
+    .frame{
+        width: 100%;
+    }
+    .info{
+        flex-direction: row;
+        flex-wrap: wrap;
+        padding: 20px 100px;
+        width: 100%;
+    }
+    
+}
