@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { ProgressBar } from "react-bootstrap";
+import { Button, ProgressBar } from "react-bootstrap";
 import { Unity, useUnityContext } from "react-unity-webgl";
 import {Loading} from "../Loading"
 import cardStyle from '../../assets/css/Game.module.css'
@@ -8,7 +8,7 @@ export function GameFrame(parameter) {
     const game=parameter.parameter
     console.log(game)
 
-    const { unityProvider, isLoaded, loadingProgression } = useUnityContext({
+    const { unityProvider, isLoaded, loadingProgression,requestFullscreen,requestPointerLock  } = useUnityContext({
       loaderUrl: `/assets/games/${game}/${game}.loader.js`,
       dataUrl: `/assets/games/${game}/${game}.data`,
       frameworkUrl: `/assets/games/${game}/${game}.framework.js`,
@@ -24,7 +24,12 @@ export function GameFrame(parameter) {
           document.location.reload(false)
       }
   },[])
-
+  function handleClickEnterFullscreen() {
+    requestFullscreen(true);
+  }
+  function handleClick() {
+    requestPointerLock();
+  }
     return (
       <div className={cardStyle.container_game}>
         {isLoaded === false && (
@@ -36,10 +41,13 @@ export function GameFrame(parameter) {
             <ProgressBar now={loadingPercentage}></ProgressBar>
           </div>
         )}
+        <div >
           <Unity className={cardStyle.frame}
             unityProvider={unityProvider}
             devicePixelRatio={devicePixelRatio}
-          />      
+          />
+          </div>
+          <Button onClick={handleClickEnterFullscreen}>Full Screen</Button>  
         </div>
     );
   }

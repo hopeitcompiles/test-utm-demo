@@ -1,4 +1,4 @@
-const BASE_URL='http://192.168.0.110:5000/'
+const BASE_URL='http://hopegames-env.eba-kx2qnbjz.us-east-1.elasticbeanstalk.com/'
 const BASE_APP_URL=`${BASE_URL}app/`
 const BASE_USER_IMAGE_URL=`${BASE_APP_URL}image/`
 
