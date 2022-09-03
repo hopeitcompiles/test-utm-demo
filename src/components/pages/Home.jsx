@@ -11,7 +11,7 @@ export function Home() {
                                 <h1 class="display-5 fw-bolder text-white mb-2">Pon a prueba tus capacidades</h1>
                                 <p class="lead fw-normal text-white-50 mb-4">Pruebas creadas para medir tus destrezas y prepararte para tus pruebas de manejo</p>
                                 <div class="d-grid gap-3 d-sm-flex justify-content-sm-center justify-content-xl-start">
-                                    <Link class="btn btn-primary btn-lg px-4 me-sm-3" to="/game">Empezar</Link>
+                                    <Link class="btn button_orange btn-lg px-4 me-sm-3" to="/game">Empezar</Link>
                                 </div>
                             </div>
                         </div>
