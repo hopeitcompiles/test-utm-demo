@@ -4,24 +4,16 @@ import {useNavigate} from 'react-router-dom'
 import { useQuery } from '../hooks/useQuery';
 import { useEffect } from 'react';
 import navicon from '../assets/images/icon-index2.svg'
-import UserContext from './authentication/UserProvider';
+import UserContext from './context/UserProvider';
 import { Button } from 'react-bootstrap';
 import Style from '../assets/css/Header.module.css'
-import { baseUserImgUrl } from '../utils/BaseUrls';
-
-const base_url = baseUserImgUrl()
 
 export function Header() {
     const [searchText, setSearchText] = useState("");
     const navigate = useNavigate(); //de React Router, agregar elemento a la ruta
     const query=useQuery();
     const searchInPath=query.get("search");
-    const {user,logout} = useContext(UserContext)
-    const [image,setImage]=useState(`${base_url}${user?.id}`)
-
-    useEffect(()=>{
-        setImage(`${base_url}${user?.id}`)
-    },[user])
+    const {user,logout,image} = useContext(UserContext)
 
     useEffect(() => {
         setSearchText(searchInPath || ""); //si searchInPath es null, set empty ""
@@ -48,9 +40,9 @@ export function Header() {
                     <div className="nav-item dropdown">
                     <Link to="#" className="nav-link dropdown-toggle text-white" data-bs-toggle="dropdown">Quick Access</Link>
                     <div className="dropdown-menu">
-                        <Link to="/users"  className="dropdown-item">Miembros</Link>
-                        <Link to="/capacitaciones"  className="dropdown-item">Capacitaciones</Link>
-                        <Link to="/game"  className="dropdown-item">Pruebas</Link>
+                        <Link to="/users"  className="dropdown-item">Users</Link>
+                        <Link to="/games"  className="dropdown-item">Games</Link>
+                        <Link to="/game"  className="dropdown-item">Tests</Link>
                     </div>
                     </div>
                 </div>

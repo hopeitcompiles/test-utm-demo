@@ -207,15 +207,19 @@
 }
 
 .error{
-    color: #be0000;;
+    color: #FF4B2B;;
     font-weight: bolder;
-    height: 10px;
-    margin-top: 6px;
+    height: 20px;
+    margin-top: 3px;
 }
 .m2{
     margin-top: 20px;
 }
-
+@media (max-width: 1200px){
+	.container_all{
+        width: 65%;
+    }
+}
 @media (max-width: 1100px){
 	.overlay_container {
         display: none;

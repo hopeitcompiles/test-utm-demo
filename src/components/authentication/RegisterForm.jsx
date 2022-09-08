@@ -1,5 +1,7 @@
 import { useState } from "react"
 import Style from "../../assets/css/Form.module.css"
+import catchError from "../../services/ErrorCatcher"
+import { RegisterUser } from "../../services/UserService"
 import { convertDate } from "../../utils/Convertions"
 
 export function RegisterForm(){
@@ -8,10 +10,31 @@ export function RegisterForm(){
     const [email,setEmail] = useState('')
     const [password, setPassword] =useState('')
     const [birthday,setBirthday] = useState(convertDate(new Date()))
+    const [error,setError] = useState('')
 
-    return (<form className={Style.form} >
+    const handleRegister=async (e) =>{
+		e.preventDefault();
+		let user={
+			'name':name,
+			'lastName':lastName,
+			'email':email,
+			'password':password,
+			'birthday':birthday
+		}
+		try{
+            const response=await RegisterUser(user)
+            if(response?.status===200){
+                setError('Registered!')
+            }else if(response?.status===208){
+                setError('This email is already registered')
+            }
+		}catch(er){
+			setError(catchError(er))
+		}
+	}
+    return (<form className={Style.form} onSubmit={handleRegister}>
                         <h1 className={Style.title}>Register</h1>
-                        <span className={Style.span}>use your email to create an account</span>
+                        <span className={Style.span}>create an account</span>
                         <input className={Style.input_form} 
                             type="text" 
                             placeholder="Name" 

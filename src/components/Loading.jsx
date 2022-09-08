@@ -4,6 +4,7 @@ export function Loading() {
   return (
     <div className={style.spinner}>
       <Spinner className={style.spinning} size={50}/>
+      <a>Loading...</a>
     </div>
   )
 }

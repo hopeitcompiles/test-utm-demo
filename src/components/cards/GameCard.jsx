@@ -1,4 +1,4 @@
-import cardStyle from '../../assets/css/GameCard.module.css'
+import cardStyle from '../../assets/css/cards/GameCard.module.css'
 import { Link } from 'react-router-dom';
 
 export function GameCard(parameter) {

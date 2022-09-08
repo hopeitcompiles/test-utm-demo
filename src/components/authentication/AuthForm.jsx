@@ -1,10 +1,10 @@
 import { useRef,useState, useEffect, useContext } from "react"
 import Style from "../../assets/css/Form.module.css"
 import { convertDate } from "../../utils/Convertions"
-import {login as loginAxios, register} from '../../utils/ApiClient'
 import catchError from "../../services/ErrorCatcher"
-import UserContext from "./UserProvider"
 import { useLocation, useNavigate } from 'react-router-dom';
+import UserContext from "../context/UserProvider"
+import { LoginUser, RegisterUser } from "../../services/UserService";
 
 export function AuthForm(){
     const [panel,setPanel] = useState(false)
@@ -29,12 +29,11 @@ export function AuthForm(){
         setError("")
 		e?.preventDefault();
 		try{
-            const response=await loginAxios(email,password)
+            const response=await LoginUser(email,password)
             const newToken=response.headers['authorization']
             if(newToken.startsWith('Bearer ')){
                 login(newToken)
                 setError('Logged in!')
-                navigate("/profile")
             }else{
                 setError('Wrong email or password')
             }
@@ -57,7 +56,7 @@ export function AuthForm(){
 		}
 		try{
            
-            const response=await register(user)
+            const response=await RegisterUser(user)
             if(response?.status===200){
                 setError('Signed up!')
                 handleLogin()
@@ -69,7 +68,12 @@ export function AuthForm(){
 		}
 		setIsSigning(false)
 	}
-
+    useEffect(()=>{
+        if(user && location==='/login'){
+            console.log("suppose we were in /login")
+            navigate("/profile")
+        }
+    })
     useEffect(()=>{
         dateRef.current.setAttribute('max',convertDate(new Date()))
         if(location==='/register' || location==='/signup'){
@@ -97,10 +101,7 @@ export function AuthForm(){
             emailRef.current.focus()
         }
     },[panel])
-
-    if(user){
-        navigate("/profile")
-    }
+    
     return (
         <div className={Style.body}>
             <div className={`${Style.container_all} ${panel?Style.right_panel_active:''}`} id="container">
@@ -113,23 +114,23 @@ export function AuthForm(){
                             placeholder="Name" 
                             ref={nameRef}
                             onChange={(e) => setName(e.target.value)}
-                            value={name}/>
+                            value={name} required/>
                         <input className={Style.input_form} 
                             type="text" 
                             placeholder="Last Name" 
                             onChange={(e) => setLastName(e.target.value)}
-                            value={lastName}/>
+                            value={lastName} required/>
                         <input className={Style.input_form} 
                             type="email" 
                             placeholder="Email" 
                             ref={emailRef}
                             onChange={(e) => setEmail(e.target.value)}
-                            value={email}/>
+                            value={email} required/>
                         <input className={Style.input_form} 
                             type="password" 
                             placeholder="Password" 
                             onChange={(e) => setPassword(e.target.value)}
-                            value={password}/>
+                            value={password} required/>
                         <input className={Style.input_form} 
                             type="date" 
                             ref={dateRef}
@@ -150,12 +151,12 @@ export function AuthForm(){
                             placeholder="Email" 
                             ref={emailRef}
                             onChange={(e) => setEmail(e.target.value)}
-                            value={email}/>
+                            value={email} required/>
                         <input className={Style.input_form} 
                             type="password" 
                             placeholder="Password" 
                             onChange={(e) => setPassword(e.target.value)}
-                            value={password}/>
+                            value={password} required/>
                         <a className={Style.link} >Forgot your password?</a>
                         <button type="submit" className={Style.btn_form}
                             disabled={isSigning}>Sign In

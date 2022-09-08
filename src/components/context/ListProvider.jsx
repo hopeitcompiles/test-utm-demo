@@ -3,10 +3,9 @@ const ListContext=createContext();
 
 const ListProvider=({children})=>{
     const [list,setList] = useState(false)
+    const [pagination,setPagination]=useState([])
+    const data = {list,setList,pagination,setPagination}
 
-    const data = {list,setList}
-
-   
     return (
         <ListContext.Provider value={data}>
             {children}

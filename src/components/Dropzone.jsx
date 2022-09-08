@@ -2,10 +2,11 @@ import {useCallback, useContext} from 'react'
 import {useDropzone} from 'react-dropzone'
 import { saveUserImage } from '../utils/ApiClient';
 import cardStyle from '../assets/css/DropZone.module.css'
-import UserCardContext from './cards/UserCardProvider';
-import { baseUserImgUrl } from '../utils/BaseUrls';
+import UserCardContext from './context/UserCardProvider';
+import { userImageUrl } from '../services/UserService';
 
-const base_url = baseUserImgUrl()
+const base_url = userImageUrl()
+
 export function Dropzone({userId}) {
   const {setError,setImage}=useContext(UserCardContext)
   let timer
