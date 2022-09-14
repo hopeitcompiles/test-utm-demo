@@ -1,36 +1,71 @@
 import { useContext, useEffect, useState} from 'react';
 import { Loading } from '../Loading';
-import {Modal} from '../Modal';
+import {Modal, Modal as ModalForForm} from '../Modal';
 import catchError from '../../services/ErrorCatcher';
-import cardStyle from '../../assets/css/cards/UserCard.module.css'
-import UserContext from '../context/UserProvider';
-import { UserCardProvider } from '../context/UserCardProvider';
+import UserContext from '../../context/UserProvider';
 import { UserCard } from "../cards/UserCard"
 import ListModeChanger from '../list/ListModeChanger';
 import { RegisterForm } from '../authentication/RegisterForm';
-import { useSearchParams } from "react-router-dom";
-import ListContext from '../context/ListProvider';
+import {  useSearchParams } from "react-router-dom";
+import ListContext from '../../context/ListProvider';
 import FootersList from './FooterList';
-import {AiOutlineUserAdd as AddIcon } from 'react-icons/ai'
 import { getUserList } from '../../services/UserService';
+import {AiOutlineUserAdd as AddIcon } from 'react-icons/ai'
+import cardStyle from '../../assets/css/list/UserList.module.css'
 
-export function UserList(){
-    const {user} = useContext(UserContext)
-    const {setPagination} = useContext(ListContext)
-    const [isLoading, setIsLoading ]=useState(true);
-    const [ users, setUsers ] = useState([])
+export function UserList({add_user_func}){
+    let multipleSelect=[]
+    //update the pagination for the navigation buttons
+    const {setPagination,selecting} = useContext(ListContext)
+
+    //loading state to show the loading screen or not
+    const [isLoading, setIsLoading ]=useState(false)
+
+    const [editingUser, setEditingUser ]=useState(null);
+    
+    const [showModalForm,setShowModalForm] = useState(false)
+    
+    //the users list itself
+    const [ usersList, setUsersList ] = useState(null)
+    //error to display in screen
     const [ error, setError ] = useState("")
-    const [modalForm,setModalForm] = useState(false)
-    const [pagePath, setPagePath] = useSearchParams();
-    const page_in_path=pagePath.get("page")
 
+    const [pagePath, setPagePath] = useSearchParams()
+
+    const page_in_path=pagePath.get("page")
+    const search_in_path=pagePath.get("search")
     useEffect(()=>{
         console.log('rendered')
     })
 
-    const loadUsers=async (page) =>{
+    const handleEdit= (user)=>{
+        setEditingUser(user)
+        setShowModalForm(true)
+    }
+
+    const handleClose= ()=>{
+        setEditingUser(null)
+        setShowModalForm(false)
+    }
+    const handleCheck= (e)=>{
+        if(e.target.checked){
+            multipleSelect.push(e.target.value)
+            
+        }else{
+            multipleSelect= multipleSelect.filter((value)=>{
+                return value!==e.target.value
+            })
+        }
+        console.log(multipleSelect)
+    }
+    
+
+    const loadUsers=async () =>{
+        setIsLoading(true)
         try{
-			const response= await getUserList(page)
+            const search_param=search_in_path ? search_in_path:"";
+            const pagenumber=page_in_path? page_in_path:1;
+			const response= await getUserList(pagenumber,search_param)
 			if(response){
                 const page_info={
                     "current":response.number+1,
@@ -41,19 +76,18 @@ export function UserList(){
                     "first":response.first
                 }
                 setPagination(page_info)
-                setUsers(response)
+                setUsersList(response.content)
 			}
 		}catch(er){
+            setUsersList(null)
 			setError(catchError(er))
 		}
         setIsLoading(false);
     }
-    
+
     useEffect(()=>{
-        const pagenumber=page_in_path? page_in_path:1;
-        setIsLoading(true);
-        loadUsers(pagenumber)
-    },[page_in_path,user])
+        loadUsers()
+    },[page_in_path,search_in_path])
 
     if(isLoading){
         return <Loading/>
@@ -67,23 +101,25 @@ export function UserList(){
     }
 
     return (
-        <div>
-            <ListModeChanger icon={<AddIcon size={30}/>} text_icon='Add user' action={()=>setModalForm(true)}/>
-            <ul className={`${cardStyle.container_card}`}>
-                {
-                    users?.content?.map((user) =>(
-                        <div key={user.id}>
-                            <UserCardProvider>
-                                <UserCard parameter={user}/>
-                            </UserCardProvider>
-                        </div>
-                    ))
-                }
-            </ul>
-            <FootersList/>
-            {modalForm&&
-                <Modal title={"Add a new account"} setClose={()=>setModalForm(false)}><RegisterForm/></Modal>
+        <section>
+            <div className={`${cardStyle.container_card}`}>
+                <ListModeChanger icon={<AddIcon size={30}/>} text_icon='Add user' action={add_user_func}/>
+            {
+                usersList?.map((user) =>(
+                    <div key={user.id} className={cardStyle.multiple_select} >
+                        {selecting&& <input type='checkbox' 
+                        onChange={(e)=>handleCheck(e)} value={user.id}/>}
+                        <UserCard current_user={user} edit_func={handleEdit}/>
+                    </div>
+                ))
             }
-        </div>
+            {showModalForm&&
+                <Modal title={"Update"} setClose={()=>handleClose()}>
+                    <RegisterForm user_edit={editingUser} on_success={loadUsers}/>
+                </Modal>
+            }
+           </div>
+           <FootersList/>
+        </section>
     );
 }

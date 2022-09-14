@@ -1,10 +1,8 @@
-import { useState } from 'react';
-import { useEffect } from 'react';
-import { useContext } from 'react';
+import { useState,useEffect,useContext } from 'react';
 import { GrFormNext as Next, GrFormPrevious as Previous,GrUndo as Back } from 'react-icons/gr';
 import { useNavigate } from 'react-router-dom';
 import Style from '../../assets/css/list/Pagination.module.css'
-import ListContext from '../context/ListProvider';
+import ListContext from '../../context/ListProvider';
 
 const MAX_BUTTONS=5
 const FootersList=()=>{
@@ -34,9 +32,22 @@ const FootersList=()=>{
         navigate("?page="+value)
     }
     const handlelastpage=()=>{
+        console.log("to last page")
         navigate("?page="+pagination.total_pages)
     }
-
+    const handleClearParams=()=>{
+        navigate("?page=1")
+    }
+    if(pagination.total_pages==0){
+        return(
+            <div className={Style.information}>
+                <div>
+                    <p>Nothing no show</p>
+                    <p className={Style.back} onClick={handleClearParams}><Back size={30}/>&nbsp; Go back</p>
+                </div>
+        </div>
+        )
+    }
     return (
         <section>
             {pagination?.total_pages>1&&
@@ -53,15 +64,15 @@ const FootersList=()=>{
                         ))
                     }
                     <a onClick={()=>handleclick(pagination.current+1)}
-                    className={`${pagination?.last&&'disabled'}`}><Next size={20}/></a>
+                    className={`${pagination?.last&&Style.disabled}`}><Next size={20}/></a>
                 </div>
             </div>
             }
             <div className={Style.information}>
-                {pagination?.current>pagination?.total_pages&&
+                {(pagination?.current>pagination?.total_pages && pagination.total_pages>0)&&
                     <div>
                         <p>There's no page {pagination.current}</p>
-                        <p className={Style.back} onClick={handlelastpage}><Back size={30}/>&nbsp; Go back to page {pagination.total_pages}</p>
+                        <p className={Style.back} onClick={handlelastpage}><Back size={30}/>&nbsp; Go back to page {pagination.total_pages>0?pagination.total_pages:1}</p>
                     </div>
                 }
                 <a>Displaying {pagination?.showing} of {pagination?.total_items} elements</a>

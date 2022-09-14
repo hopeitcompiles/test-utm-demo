@@ -3,11 +3,14 @@ import Style from "../../assets/css/Form.module.css"
 import { convertDate } from "../../utils/Convertions"
 import catchError from "../../services/ErrorCatcher"
 import { useLocation, useNavigate } from 'react-router-dom';
-import UserContext from "../context/UserProvider"
+import UserContext from "../../context/UserProvider"
 import { LoginUser, RegisterUser } from "../../services/UserService";
 
 export function AuthForm(){
-    const [panel,setPanel] = useState(false)
+    const location=useLocation().pathname
+    const [registerPanelActive,setRegisterPanelActive] = useState(
+        location==='/register'?true:false)
+
 	const [name,setName] = useState('')
 	const [lastName,setLastName] = useState('')
     const [email,setEmail] = useState('')
@@ -16,12 +19,13 @@ export function AuthForm(){
 
     const [error, setError] =useState('')
     const [isSigning, setIsSigning] = useState(false)
-    const {login,user} = useContext(UserContext)
+
+    const {login,sessionUser} = useContext(UserContext)
+
     const navigate=useNavigate()
 	const dateRef=useRef()
     const emailRef=useRef()
     const nameRef=useRef()
-    const location=useLocation().pathname
     let timer
 
     const handleLogin=async (e) =>{
@@ -68,43 +72,51 @@ export function AuthForm(){
 		}
 		setIsSigning(false)
 	}
-    useEffect(()=>{
-        if(user && location==='/login'){
-            console.log("suppose we were in /login")
-            navigate("/profile")
-        }
-    })
-    useEffect(()=>{
-        dateRef.current.setAttribute('max',convertDate(new Date()))
-        if(location==='/register' || location==='/signup'){
-            setPanel(true)
-        }else if(location==='/login' || location==='/signin'){
-            setPanel(false)
-        }
-    },[location])
 
     useEffect(()=>{
-        clearTimeout(timer)
-		timer = setTimeout(function() {
-            if(error!==''){
-			    setError('')
-            }
-		}, 5000);
+        if(error!==''){
+            clearTimeout(timer)
+            timer = setTimeout(function() {
+                setError('')
+            }, 5000);
+        }
 	},[error])
+
+    const handleRightPanel=(state)=>{
+        if(location==='/register' || location==='/login'){
+            navigate(state?'/register':'/login')
+            return;
+        }
+        setRegisterPanelActive(state)
+    }
 
     useEffect(()=>{
         setIsSigning(false)
         setError("")
-        if(panel){
-            nameRef.current.focus()
-        }else{
-            emailRef.current.focus()
+        if(!(location==='/register' || location==='/login')){
+            return;
         }
-    },[panel])
-    
+        if(location==='/register'){
+            nameRef.current.focus()
+            setRegisterPanelActive(true)
+            return;
+        }
+        if(location==='/login'){
+            emailRef.current.focus()
+            setRegisterPanelActive(false)
+            return;
+        }
+    },[location])
+
+    useEffect(()=>{
+        if(sessionUser!==null && (location==='/login' ||location==='/register')){
+            navigate('/profile')
+        }
+    },[sessionUser])
+
     return (
         <div className={Style.body}>
-            <div className={`${Style.container_all} ${panel?Style.right_panel_active:''}`} id="container">
+            <div className={`${Style.container_all} ${registerPanelActive?Style.right_panel_active:''}`} id="container">
                 <div className={`${Style.form_container} ${Style.sign_up_container}`}>
                     <form className={Style.form} onSubmit={handleRegister}>
                         <h1 className={Style.title}>Register</h1>
@@ -124,7 +136,7 @@ export function AuthForm(){
                             type="email" 
                             placeholder="Email" 
                             ref={emailRef}
-                            onChange={(e) => setEmail(e.target.value)}
+                            onChange={(e) => setEmail(e.target.value.toLowerCase())}
                             value={email} required/>
                         <input className={Style.input_form} 
                             type="password" 
@@ -139,6 +151,7 @@ export function AuthForm(){
                         <button type="submit" className={Style.btn_form}
                             disabled={isSigning}>Sign Up
                         </button>
+                        <a className={Style.show_on_small} onClick={()=>handleRightPanel(false)}>Have already an account?</a>
                         <h6 className={Style.error} >{error}</h6>
                     </form>
                 </div>
@@ -150,7 +163,7 @@ export function AuthForm(){
                             type="email" 
                             placeholder="Email" 
                             ref={emailRef}
-                            onChange={(e) => setEmail(e.target.value)}
+                            onChange={(e) => setEmail(e.target.value.toLowerCase())}
                             value={email} required/>
                         <input className={Style.input_form} 
                             type="password" 
@@ -161,6 +174,7 @@ export function AuthForm(){
                         <button type="submit" className={Style.btn_form}
                             disabled={isSigning}>Sign In
                         </button>
+                        <a className={Style.show_on_small} onClick={()=>handleRightPanel(true)}>Don't have an account?</a>
                         <div className={Style.m2}></div>
                         <h6 className={Style.error} >{error}</h6>
                     </form>
@@ -171,13 +185,13 @@ export function AuthForm(){
                             <h1 className={Style.title}>Have already an account?</h1>
                             <p className={Style.paragraph}>To keep connected with us please login with your personal info that Facebook has sold</p>
                             <button className={`${Style.btn_form} ${Style.ghost}`}  
-                                onClick={()=>setPanel(false)} >Sign In</button>
+                                onClick={()=>handleRightPanel(false)} >Sign In</button>
                         </div>
                         <div className={`${Style.overlay_panel} ${Style.overlay_right}`}>
                             <h1 className={Style.title}>Don't have an account?</h1>
                             <p className={Style.paragraph}>Enter your personal details and the embarrassing email you had created when you were a child</p>
                             <button className={`${Style.btn_form} ${Style.ghost}`} 
-                            onClick={()=>setPanel(true)} >Sign Up</button>
+                            onClick={()=>handleRightPanel(true)} >Sign Up</button>
                         </div>
                     </div>
                 </div>

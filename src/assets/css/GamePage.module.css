@@ -18,7 +18,14 @@
     text-align: left;
     
 }
-
+.author_thumb {
+	flex-shrink: 0;
+	width: 80px;
+	height: 80px;      
+	border-radius: 50%;  
+	object-fit: cover;
+	cursor: pointer;    
+  }
 .info{
     display: flex;
     flex-direction: column;

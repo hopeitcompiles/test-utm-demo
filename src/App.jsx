@@ -7,13 +7,15 @@ import {
   Route,
 } from 'react-router-dom';
 import { AuthForm } from './components/authentication/AuthForm';
-import { Home } from './components/pages/Home';
+import { HomePage } from './pages/HomePage';
 import { GameList } from './components/list/GameList';
 import { UserList } from './components/list/UserList';
-import { UserProvider } from './components/context/UserProvider';
+import { UserProvider } from './context/UserProvider';
 import { ListFrame } from './components/list/ListFrame';
-import { Profile } from './components/pages/Profile';
+import { ProfilePage } from './pages/ProfilePage';
 import { TestList } from './components/list/TestList';
+import AdminPage from './pages/AdminPage';
+import UsersPage from './pages/UsersPage';
 
 export function App() {
   useEffect(()=>{
@@ -26,13 +28,14 @@ export function App() {
         <Header/>
         <Routes>
         <Route path="/" element={
-            <Home/> 
+            <HomePage/> 
           }/>
         <Route path="/users" element={
-              <ListFrame parameter={<UserList/>}/>
+              <UsersPage/>
           }/>
           <Route path="/games" element={
-              <ListFrame parameter={<GameList/>}/>
+              <ListFrame> <GameList/>
+              </ListFrame>
           }/>
           <Route path="/login" element={
               <AuthForm/>
@@ -41,14 +44,18 @@ export function App() {
             <AuthForm/>
           }/>
           <Route path="/profile" element={
-              <Profile/>
+              <ProfilePage/>
           }/>
-          <Route path="/game" element={
-            <ListFrame parameter={<TestList/>}/> 
+          <Route path="/tests" element={
+            <ListFrame> <GameList/>
+            </ListFrame>
           }/>
-          <Route path="/game/:gameName" element={
+          <Route path="/games/:gameid" element={
               <GamePage/>
           }/> 
+          <Route path="/admin" element={
+              <AdminPage/>
+          }/>
           <Route path="/*" element={
             <h1>404 not found</h1>
         }/>

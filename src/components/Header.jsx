@@ -1,27 +1,28 @@
-import   {Link} from 'react-router-dom';
-import { useContext, useState } from 'react';
+import   {Link, useParams, useSearchParams} from 'react-router-dom';
+import { useContext, useState,useEffect } from 'react';
 import {useNavigate} from 'react-router-dom'
 import { useQuery } from '../hooks/useQuery';
-import { useEffect } from 'react';
-import navicon from '../assets/images/icon-index2.svg'
-import UserContext from './context/UserProvider';
+import navicon from '../assets/images/logo.png'
+import UserContext from '../context/UserProvider';
 import { Button } from 'react-bootstrap';
 import Style from '../assets/css/Header.module.css'
 
 export function Header() {
-    const [searchText, setSearchText] = useState("");
+    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchText, setSearchText] = useState(searchParams|| "");
     const navigate = useNavigate(); //de React Router, agregar elemento a la ruta
-    const query=useQuery();
-    const searchInPath=query.get("search");
-    const {user,logout,image} = useContext(UserContext)
-
+    const {sessionUser,logout,image} = useContext(UserContext)
     useEffect(() => {
-        setSearchText(searchInPath || ""); //si searchInPath es null, set empty ""
-    }, [searchInPath]);
+        setSearchText(searchParams.get('search')|| ""); //si searchInPath es null, set empty ""
+    }, [searchParams]);
 
     const submitSearch = (e) => {
         e.preventDefault();
-        navigate("/?search="+searchText);//agrega a la ruta
+        let search = {
+            search: searchText
+          }
+        
+        setSearchParams(search, { replace: true });
     }
 
   return (
@@ -36,7 +37,7 @@ export function Header() {
             <div className="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                 <div className="navbar-nav ">
                 <Link to="/" className="nav-item nav-link active text-white">Inicio</Link>
-                <Link to="/game" className="nav-item nav-link text-white">Pruebas</Link>
+                <Link to="/tests" className="nav-item nav-link text-white">Pruebas</Link>
                     <div className="nav-item dropdown">
                     <Link to="#" className="nav-link dropdown-toggle text-white" data-bs-toggle="dropdown">Quick Access</Link>
                     <div className="dropdown-menu">
@@ -50,14 +51,14 @@ export function Header() {
                     <input className="form-control me-2" type="search" value={searchText} onChange={(e)=>setSearchText(e.target.value)} placeholder="Buscar" name="searching" required/>
                     
                 </form>
-                {user?<div className="navbar-nav ">   
+                {sessionUser?<div className="navbar-nav ">   
                     <div className="nav-item dropdown">
                         <Link to="#" className="nav-link dropdown-toggle text-white" data-bs-toggle="dropdown">
                             <img className={[Style.profile_picture ]} src={image} 
-                            alt={user.name}/>{user.name}</Link>
+                            alt={sessionUser.name}/>{sessionUser.name}</Link>
                         <div className="dropdown-menu">
                             <Link to="/profile"  className="dropdown-item">Profile</Link>
-                            <Link to="/payments"  className="dropdown-item">Payments</Link>
+                            <Link to="/admin"  className="dropdown-item">Admin</Link>
                             <Button onClick={logout}  className="dropdown-item text-danger">Log out</Button>
                         </div>
                     </div>

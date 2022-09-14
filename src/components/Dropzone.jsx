@@ -1,46 +1,86 @@
-import {useCallback, useContext} from 'react'
+import {useCallback, useEffect,useState} from 'react'
 import {useDropzone} from 'react-dropzone'
-import { saveUserImage } from '../utils/ApiClient';
 import cardStyle from '../assets/css/DropZone.module.css'
-import UserCardContext from './context/UserCardProvider';
-import { userImageUrl } from '../services/UserService';
+import {BiImage as Icon} from 'react-icons/bi'
 
-const base_url = userImageUrl()
+export function Dropzone({onChange,change_funct,drop_text}) {
 
-export function Dropzone({userId}) {
-  const {setError,setImage}=useContext(UserCardContext)
-  let timer
   const onDrop = useCallback(acceptedFiles => {
-    const file=acceptedFiles[0];
-    const formData = new FormData()
-    formData.append('file',file)
-    try{
-     saveUserImage(userId,formData)
-     const neww=`${base_url}${userId}?${String(new Date()).replace(/\s+/g, '')}`
-     clearTimeout(timer)
-      timer = setTimeout(function() {
-        setImage(neww)
-      }, 1200);
-      setError("Image Updated")
-    }catch (error){
-      setError("Image Update Failed")
-    }
+    const file_acepted=acceptedFiles[0]
+    handleUpload(file_acepted)
   }, [])
+
   const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
+  const [error,setError]=useState('')
+  const [uploading,setUploading]=useState(false)
+  const [file,setFile]=useState(null)
+  let timer
+  
+  useEffect(()=>{
+    clearTimeout(timer)
+    if(error!==''){
+      timer = setTimeout(function() {
+        setError('')
+      }, 3000);
+    }
+  },[error])
+
+  useEffect(()=>{
+    if(file===null){
+      return;
+    }
+    if(onChange){
+      onChange(file)
+    }
+    return () =>{
+      if(!file){
+        return;
+      }
+      URL.revokeObjectURL(file)
+    }
+  },[file])
+
+  const handleUpload=async (file_acepted) =>{
+    setUploading(true)
+    try{
+      const formData = new FormData()
+      formData.append('file',file_acepted)
+      const response=await change_funct(formData)
+      if(file){
+        URL.revokeObjectURL(file)
+      }
+      setFile(URL.createObjectURL(file_acepted))
+      setError({success:true,message:(drop_text&&drop_text)+" updated"})
+    }catch (error){
+      setError({success:false,message:(drop_text&&drop_text)+" update failed"})
+    }
+    setUploading(false)
+  }
+
 
   return (
-
     <div className={cardStyle.zone} {...getRootProps()}>
       <input {...getInputProps()} />
       {
         isDragActive ?
-            <div className={cardStyle.dropping} placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="basic-addon2">
-                Drop the image here ...
+            <div className={`${cardStyle.dropping} ${cardStyle.message}`} placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                Drop the {drop_text?drop_text:'file'} here ...
             </div> :
-            <div role="button" className="input-group mb-3">
-                <span className="input-group-text" id="basic-addon2"><i className="fa fa-image"></i></span>
-                <div className="form-control btn-sm" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="basic-addon2">
-                    Drop a image here, or click to select one
+            <div role="button" className={`input-group mb-3 ${cardStyle.not_dropping}`}>
+                <span className="input-group-text" id="basic-addon2"><Icon size={25}/></span>
+                <div className={`form-control btn-sm `} placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                      {uploading?
+                        'Uploading...'
+                      :
+                      <span>
+                        {error===''?
+                          <span >Drop your {drop_text?drop_text:'file'} here, or click to select one</span>
+                        :
+                          <span className={`${cardStyle.message} 
+                          ${error.success?cardStyle.success:cardStyle.error}`}>{error.message}</span>
+                        }
+                      </span>
+                    }
                 </div>
             </div>
       }
